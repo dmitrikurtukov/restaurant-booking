@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: restaurant-booking-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/restaurant
+    username: restaurant
+    password: restaurant
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    enabled: true
