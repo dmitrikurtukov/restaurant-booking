@@ -1,0 +1,91 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-zone
+      author: dmitrikurtukov
+      changes:
+        - createTable:
+            tableName: zone
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-table
+      author: dmitrikurtukov
+      changes:
+        - createTable:
+            tableName: restaurant_table
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: capacity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: x_position
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: y_position
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: zone_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_table_zone
+                    references: zone(id)
+
+  - changeSet:
+      id: 003-create-reservation
+      author: dmitrikurtukov
+      changes:
+        - createTable:
+            tableName: reservation
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: table_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_table
+                    references: restaurant_table(id)
+              - column:
+                  name: start_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: party_size
+                  type: int
+                  constraints:
+                    nullable: false
