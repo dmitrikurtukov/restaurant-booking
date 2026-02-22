@@ -89,3 +89,67 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 004-seed-zones
+      author: dmitrikurtukov
+      changes:
+        - insert:
+            tableName: zone
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: "Main Hall" }
+        - insert:
+            tableName: zone
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: name, value: "Terrace" }
+        - insert:
+            tableName: zone
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: name, value: "Private Room" }
+
+  - changeSet:
+      id: 005-seed-tables
+      author: dmitrikurtukov
+      changes:
+        - insert:
+            tableName: restaurant_table
+            columns:
+              - column: { name: capacity, valueNumeric: 2 }
+              - column: { name: x_position, valueNumeric: 50 }
+              - column: { name: y_position, valueNumeric: 50 }
+              - column: { name: zone_id, valueNumeric: 1 }
+
+        - insert:
+            tableName: restaurant_table
+            columns:
+              - column: { name: capacity, valueNumeric: 4 }
+              - column: { name: x_position, valueNumeric: 150 }
+              - column: { name: y_position, valueNumeric: 50 }
+              - column: { name: zone_id, valueNumeric: 1 }
+
+        - insert:
+            tableName: restaurant_table
+            columns:
+              - column: { name: capacity, valueNumeric: 6 }
+              - column: { name: x_position, valueNumeric: 250 }
+              - column: { name: y_position, valueNumeric: 50 }
+              - column: { name: zone_id, valueNumeric: 1 }
+
+        - insert:
+            tableName: restaurant_table
+            columns:
+              - column: { name: capacity, valueNumeric: 4 }
+              - column: { name: x_position, valueNumeric: 50 }
+              - column: { name: y_position, valueNumeric: 150 }
+              - column: { name: zone_id, valueNumeric: 2 }
+
+        - insert:
+            tableName: restaurant_table
+            columns:
+              - column: { name: capacity, valueNumeric: 8 }
+              - column: { name: x_position, valueNumeric: 150 }
+              - column: { name: y_position, valueNumeric: 150 }
+              - column: { name: zone_id, valueNumeric: 3 }
