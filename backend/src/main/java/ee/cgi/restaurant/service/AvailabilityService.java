@@ -27,15 +27,18 @@ public class AvailabilityService {
             List<TablePreference> preferences
     ) {
         List<RestaurantTable> tables = zoneId == null
-                ? restaurantTableRepository.findAll()
-                : restaurantTableRepository.findAllByZoneId(zoneId);
+                ? restaurantTableRepository.findAllWithZone()
+                : restaurantTableRepository.findAllByZoneIdWithZone(zoneId);
 
-        Set<Long> occupiedTableIds = generateDeterministicOccupiedTables(tables, start, end);
+        Set<Long> occupiedByReservations = new HashSet<>(reservationRepository.findOccupiedTableIds(start, end));
+        Set<Long> occupiedRandom = generateDeterministicOccupiedTables(tables, start, end);
+        Set<Long> occupiedTableIds = new HashSet<>(occupiedByReservations);
+        occupiedTableIds.addAll(occupiedRandom);
 
         List<AvailabilityResponse.TableAvailabilityDto> result = new ArrayList<>();
         for (RestaurantTable t : tables) {
             boolean tooSmall = t.getCapacity() < partySize;
-            boolean isOccupied = occupiedTableIds.contains(t.getId()) || isOccupiedByReservation(t, start, end);
+            boolean isOccupied = occupiedTableIds.contains(t.getId());
 
             AvailabilityResponse.TableStatus status;
             if (tooSmall) status = AvailabilityResponse.TableStatus.TOO_SMALL;
@@ -90,11 +93,5 @@ public class AvailabilityService {
         }
 
         return fitScore + preferenceScore;
-    }
-
-    private boolean isOccupiedByReservation(RestaurantTable table, LocalDateTime start, LocalDateTime end) {
-        return !reservationRepository
-                .findByTableIdAndStartTimeLessThanAndEndTimeGreaterThan(table.getId(), end, start)
-                .isEmpty();
     }
 }
