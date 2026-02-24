@@ -24,13 +24,9 @@ public class AvailabilityService {
             Long zoneId,
             List<TablePreference> preferences
     ) {
-        List<RestaurantTable> tables = restaurantTableRepository.findAll();
-
-        if (zoneId != null) {
-            tables = tables.stream()
-                    .filter(t -> t.getZone() != null && Objects.equals(t.getZone().getId(), zoneId))
-                    .toList();
-        }
+        List<RestaurantTable> tables = zoneId == null
+                ? restaurantTableRepository.findAll()
+                : restaurantTableRepository.findAllByZoneId(zoneId);
 
         Set<Long> occupiedTableIds = generateDeterministicOccupiedTables(tables, start, end);
 
