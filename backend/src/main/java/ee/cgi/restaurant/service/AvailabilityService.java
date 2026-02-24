@@ -19,6 +19,7 @@ public class AvailabilityService {
     @Transactional(readOnly = true)
     public AvailabilityResponse getAvailability(
             LocalDateTime start,
+            LocalDateTime end,
             int partySize,
             Long zoneId,
             List<TablePreference> preferences
@@ -31,7 +32,7 @@ public class AvailabilityService {
                     .toList();
         }
 
-        Set<Long> occupiedTableIds = generateDeterministicOccupiedTables(tables, start);
+        Set<Long> occupiedTableIds = generateDeterministicOccupiedTables(tables, start, end);
 
         List<AvailabilityResponse.TableAvailabilityDto> result = new ArrayList<>();
         for (RestaurantTable t : tables) {
@@ -66,8 +67,8 @@ public class AvailabilityService {
         return new AvailabilityResponse(result, recommendedId, top3);
     }
 
-    private Set<Long> generateDeterministicOccupiedTables(List<RestaurantTable> tables, LocalDateTime start) {
-        long seed = start.hashCode();
+    private Set<Long> generateDeterministicOccupiedTables(List<RestaurantTable> tables, LocalDateTime start, LocalDateTime end) {
+        long seed = Objects.hash(start, end);
         Set<Long> occupied = new HashSet<>();
 
         for (RestaurantTable t : tables) {

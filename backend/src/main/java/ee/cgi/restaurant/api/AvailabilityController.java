@@ -25,10 +25,12 @@ public class AvailabilityController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam int partySize,
             @RequestParam(required = false) Long zoneId,
-            @RequestParam(required = false) String preferences
+            @RequestParam(required = false) String preferences,
+            @RequestParam(required = false, defaultValue = "120") int durationMinutes
     ) {
         List<TablePreference> prefs = parsePreferences(preferences);
-        return availabilityService.getAvailability(start, partySize, zoneId, prefs);
+        LocalDateTime end = start.plusMinutes(durationMinutes);
+        return availabilityService.getAvailability(start, end, partySize, zoneId, prefs);
     }
 
     private List<TablePreference> parsePreferences(String preferences) {
