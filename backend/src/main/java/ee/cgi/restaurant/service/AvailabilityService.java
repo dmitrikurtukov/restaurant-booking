@@ -3,6 +3,7 @@ package ee.cgi.restaurant.service;
 import ee.cgi.restaurant.api.dto.AvailabilityResponse;
 import ee.cgi.restaurant.api.dto.TablePreference;
 import ee.cgi.restaurant.domain.RestaurantTable;
+import ee.cgi.restaurant.repository.ReservationRepository;
 import ee.cgi.restaurant.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AvailabilityService {
     private final RestaurantTableRepository restaurantTableRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional(readOnly = true)
     public AvailabilityResponse getAvailability(
@@ -33,7 +35,7 @@ public class AvailabilityService {
         List<AvailabilityResponse.TableAvailabilityDto> result = new ArrayList<>();
         for (RestaurantTable t : tables) {
             boolean tooSmall = t.getCapacity() < partySize;
-            boolean isOccupied = occupiedTableIds.contains(t.getId());
+            boolean isOccupied = occupiedTableIds.contains(t.getId()) || isOccupiedByReservation(t, start, end);
 
             AvailabilityResponse.TableStatus status;
             if (tooSmall) status = AvailabilityResponse.TableStatus.TOO_SMALL;
@@ -88,5 +90,11 @@ public class AvailabilityService {
         }
 
         return fitScore + preferenceScore;
+    }
+
+    private boolean isOccupiedByReservation(RestaurantTable table, LocalDateTime start, LocalDateTime end) {
+        return !reservationRepository
+                .findByTableIdAndStartTimeLessThanAndEndTimeGreaterThan(table.getId(), end, start)
+                .isEmpty();
     }
 }
