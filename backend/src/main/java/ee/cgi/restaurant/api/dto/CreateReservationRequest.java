@@ -10,7 +10,7 @@ public record CreateReservationRequest(
         @NotNull Long tableId,
         @NotNull LocalDateTime start,
         @Min(1) int partySize,
-        Integer durationMinutes,
+        @Min(1) Integer durationMinutes,
         List<TablePreference> preferences
 ) {
 }
