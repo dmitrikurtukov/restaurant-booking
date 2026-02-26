@@ -69,16 +69,16 @@ public class AvailabilityService {
     }
 
     private Set<Long> generateDeterministicOccupiedTables(List<RestaurantTable> tables, LocalDateTime start, LocalDateTime end) {
-        long seed = Objects.hash(start, end);
-        Set<Long> occupied = new HashSet<>();
+        double occupancyRate = 0.25;
+        int k = (int) Math.round(tables.size() * occupancyRate);
 
-        for (RestaurantTable t : tables) {
-            long mixed = seed ^ (t.getId() * 31L);
-            Random r = new Random(mixed);
-            boolean isOccupied = r.nextDouble() < 0.25;
-            if (isOccupied) occupied.add(t.getId());
-        }
-        return occupied;
+        long seed = Objects.hash(start, end);
+        List<Long> ids = tables.stream().map(RestaurantTable::getId).sorted().toList();
+
+        List<Long> shuffled = new ArrayList<>(ids);
+        Collections.shuffle(shuffled, new Random(seed));
+
+        return new HashSet<>(shuffled.subList(0, Math.min(k, shuffled.size())));
     }
 
     private int computeScore(RestaurantTable table, int partySize, List<TablePreference> preferences, AvailabilityResponse.TableStatus status) {
