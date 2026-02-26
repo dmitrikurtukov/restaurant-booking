@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
+    private static final int DEFAULT_DURATION_MINUTES = 120;
+
     private final ReservationRepository reservationRepository;
     private final RestaurantTableRepository restaurantTableRepository;
 
@@ -27,8 +29,12 @@ public class ReservationService {
             throw new IllegalArgumentException("Table capacity is too small");
         }
 
-        int duration = (req.durationMinutes() == null) ? 120 : req.durationMinutes();
+        int duration = (req.durationMinutes() == null) ? DEFAULT_DURATION_MINUTES : req.durationMinutes();
         LocalDateTime end = req.start().plusMinutes(duration);
+
+        if (!end.isAfter(req.start())) {
+            throw new IllegalArgumentException("Reservation end time must be after start time");
+        }
 
         boolean overlaps = reservationRepository
                 .existsByTableIdAndStartTimeLessThanAndEndTimeGreaterThan(table.getId(), end, req.start());

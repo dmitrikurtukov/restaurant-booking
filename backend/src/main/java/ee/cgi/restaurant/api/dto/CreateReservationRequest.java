@@ -1,5 +1,6 @@
 package ee.cgi.restaurant.api.dto;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -10,7 +11,7 @@ public record CreateReservationRequest(
         @NotNull Long tableId,
         @NotNull LocalDateTime start,
         @Min(1) int partySize,
-        @Min(1) Integer durationMinutes,
+        @Min(1) @Max(300) Integer durationMinutes,
         List<TablePreference> preferences
 ) {
 }

@@ -3,6 +3,7 @@ package ee.cgi.restaurant.api;
 import ee.cgi.restaurant.api.dto.AvailabilityResponse;
 import ee.cgi.restaurant.api.dto.TablePreference;
 import ee.cgi.restaurant.service.AvailabilityService;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,7 +30,7 @@ public class AvailabilityController {
             @RequestParam @Min(1) int partySize,
             @RequestParam(required = false) Long zoneId,
             @RequestParam(required = false) String preferences,
-            @RequestParam(required = false, defaultValue = "120") @Min(1) int durationMinutes
+            @RequestParam(required = false, defaultValue = "120") @Min(1) @Max(300) int durationMinutes
     ) {
         List<TablePreference> prefs = parsePreferences(preferences);
         LocalDateTime end = start.plusMinutes(durationMinutes);
