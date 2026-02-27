@@ -29,7 +29,8 @@ public class LayoutController {
                                 t.getCapacity(),
                                 t.getXPosition(),
                                 t.getYPosition(),
-                                t.getZone().getId()
+                                t.getZone().getId(),
+                                t.getFeatures()
                         )).toList()
                 ))
                 .toList();
