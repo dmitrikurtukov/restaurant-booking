@@ -16,4 +16,4 @@ spring:
 
 app:
   availability:
-    mode: real
+    mode: mixed
