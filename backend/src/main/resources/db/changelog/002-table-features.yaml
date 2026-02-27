@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-restaurant-table-feature
+      author: dmitrikurtukov
+      changes:
+        - createTable:
+            tableName: restaurant_table_feature
+            columns:
+              - column:
+                  name: table_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    foreignKeyName: fk_restaurant_table_feature_table
+                    references: restaurant_table(id)
+              - column:
+                  name: feature
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+  - changeSet:
+      id: 007-seed-restaurant-table-feature
+      author: dmitrikurtukov
+      changes:
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 1 }
+              - column: { name: feature, value: "QUIET" }
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 1 }
+              - column: { name: feature, value: "WINDOW" }
+
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 2 }
+              - column: { name: feature, value: "QUIET" }
+
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 3 }
+              - column: { name: feature, value: "NEAR_KIDS" }
+
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 4 }
+              - column: { name: feature, value: "ACCESSIBLE" }
+
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 5 }
+              - column: { name: feature, value: "QUIET" }
+        - insert:
+            tableName: restaurant_table_feature
+            columns:
+              - column: { name: table_id, valueNumeric: 5 }
+              - column: { name: feature, value: "WINDOW" }

@@ -3,6 +3,9 @@ package ee.cgi.restaurant.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "restaurant_table")
 @Getter
@@ -27,4 +30,14 @@ public class RestaurantTable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "zone_id", nullable = false)
     private Zone zone;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "restaurant_table_feature",
+            joinColumns = @JoinColumn(name = "table_id")
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "feature", nullable = false, length = 50)
+    @Builder.Default
+    private Set<TableFeature> features = new HashSet<>();
 }

@@ -4,6 +4,7 @@ import ee.cgi.restaurant.api.dto.AvailabilityResponse;
 import ee.cgi.restaurant.api.dto.TablePreference;
 import ee.cgi.restaurant.config.AvailabilityProperties;
 import ee.cgi.restaurant.domain.RestaurantTable;
+import ee.cgi.restaurant.domain.TableFeature;
 import ee.cgi.restaurant.repository.ReservationRepository;
 import ee.cgi.restaurant.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -101,11 +103,30 @@ public class AvailabilityService {
         int waste = table.getCapacity() - partySize;
         int fitScore = 100 - (waste * 10);
 
+        Set<TableFeature> requestedFeatures = mapPreferences(preferences);
         int preferenceScore = 0;
-        if (preferences != null) {
-            preferenceScore += preferences.size() * 2;
+        if (!requestedFeatures.isEmpty()) {
+            long matches = requestedFeatures.stream().filter(table.getFeatures()::contains).count();
+            long misses = requestedFeatures.size() - matches;
+            preferenceScore = (int) (matches * 20 - misses * 5);
         }
 
         return fitScore + preferenceScore;
+    }
+
+    private Set<TableFeature> mapPreferences(List<TablePreference> preferences) {
+        if (preferences == null || preferences.isEmpty()) return Set.of();
+
+        return preferences.stream()
+                .map(TablePreference::name)
+                .map(name -> {
+                    try {
+                        return TableFeature.valueOf(name);
+                    } catch (IllegalArgumentException _) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 }
