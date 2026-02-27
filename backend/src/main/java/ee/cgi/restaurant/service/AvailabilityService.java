@@ -2,6 +2,7 @@ package ee.cgi.restaurant.service;
 
 import ee.cgi.restaurant.api.dto.AvailabilityResponse;
 import ee.cgi.restaurant.api.dto.TablePreference;
+import ee.cgi.restaurant.config.AvailabilityProperties;
 import ee.cgi.restaurant.domain.RestaurantTable;
 import ee.cgi.restaurant.repository.ReservationRepository;
 import ee.cgi.restaurant.repository.RestaurantTableRepository;
@@ -17,6 +18,7 @@ import java.util.*;
 public class AvailabilityService {
     private final RestaurantTableRepository restaurantTableRepository;
     private final ReservationRepository reservationRepository;
+    private final AvailabilityProperties availabilityProperties;
 
     @Transactional(readOnly = true)
     public AvailabilityResponse getAvailability(
@@ -30,10 +32,7 @@ public class AvailabilityService {
                 ? restaurantTableRepository.findAllWithZone()
                 : restaurantTableRepository.findAllByZoneIdWithZone(zoneId);
 
-        Set<Long> occupiedByReservations = new HashSet<>(reservationRepository.findOccupiedTableIds(start, end));
-        Set<Long> occupiedRandom = generateDeterministicOccupiedTables(tables, start, end);
-        Set<Long> occupiedTableIds = new HashSet<>(occupiedByReservations);
-        occupiedTableIds.addAll(occupiedRandom);
+        Set<Long> occupiedTableIds = resolveOccupiedTableIds(tables, start, end);
 
         List<AvailabilityResponse.TableAvailabilityDto> result = new ArrayList<>();
         for (RestaurantTable t : tables) {
@@ -66,6 +65,21 @@ public class AvailabilityService {
         List<Long> top3 = freeTablesSorted.stream().limit(3).map(AvailabilityResponse.TableAvailabilityDto::id).toList();
 
         return new AvailabilityResponse(result, recommendedId, top3);
+    }
+
+    private Set<Long> resolveOccupiedTableIds(List<RestaurantTable> tables, LocalDateTime start, LocalDateTime end) {
+        Set<Long> occupiedByReservations = new HashSet<>(reservationRepository.findOccupiedTableIds(start, end));
+        Set<Long> occupiedRandom = generateDeterministicOccupiedTables(tables, start, end);
+
+        return switch (availabilityProperties.getMode()) {
+            case REAL -> occupiedByReservations;
+            case RANDOM -> occupiedRandom;
+            case MIXED -> {
+                Set<Long> merged = new HashSet<>(occupiedByReservations);
+                merged.addAll(occupiedRandom);
+                yield merged;
+            }
+        };
     }
 
     private Set<Long> generateDeterministicOccupiedTables(List<RestaurantTable> tables, LocalDateTime start, LocalDateTime end) {
