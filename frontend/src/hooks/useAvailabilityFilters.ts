@@ -1,13 +1,6 @@
 import { useState } from "react";
 import type { TablePreference } from "../types/api";
-
-export interface AvailabilityFiltersValues {
-  start: string | null;
-  partySize: number;
-  durationMinutes: number;
-  zoneId: string | null;
-  preferences: TablePreference[];
-}
+import type { AvailabilityFiltersValues } from "../types/availability";
 
 export function useAvailabilityFilters() {
   const [start, setStart] = useState<string | null>(null);

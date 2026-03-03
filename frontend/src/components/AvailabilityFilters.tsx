@@ -10,11 +10,9 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Search } from "lucide-react";
-import {
-  type AvailabilityFiltersValues,
-  useAvailabilityFilters,
-} from "../hooks/useAvailabilityFilters";
+import { useAvailabilityFilters } from "../hooks/useAvailabilityFilters";
 import type { TablePreference } from "../types/api.ts";
+import type { AvailabilityFiltersValues } from "../types/availability.ts";
 
 const zoneOptions = [
   { value: "1", label: "Main Hall" },
