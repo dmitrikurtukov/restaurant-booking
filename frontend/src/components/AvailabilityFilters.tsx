@@ -1,15 +1,19 @@
-import { Alert, Button, Card, Grid, MultiSelect, NumberInput, Select, Stack, Title } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Card,
+  Grid,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Stack,
+  Title,
+} from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { CircleAlert, Search } from "lucide-react";
 import { useAvailabilityFilters } from "../hooks/useAvailabilityFilters";
 import type { AvailabilityFiltersValues } from "../types/availability";
 import type { TablePreference } from "../types/api.ts";
-
-const zoneOptions = [
-  { value: "1", label: "Main Hall" },
-  { value: "2", label: "Terrace" },
-  { value: "3", label: "Private Room" },
-];
 
 const preferenceOptions: Array<{ value: TablePreference; label: string }> = [
   { value: "QUIET", label: "Quiet" },
@@ -20,10 +24,12 @@ const preferenceOptions: Array<{ value: TablePreference; label: string }> = [
 
 type AvailabilityFiltersProps = {
   onSubmit: (filters: AvailabilityFiltersValues) => void;
+  zoneOptions: Array<{ value: string; label: string }>;
 };
 
 export function AvailabilityFilters({
   onSubmit,
+  zoneOptions,
 }: Readonly<AvailabilityFiltersProps>) {
   const {
     filters,
