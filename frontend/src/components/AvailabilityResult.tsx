@@ -1,20 +1,24 @@
-import {
-  Alert,
-  Badge,
-  Card,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Alert, Badge, Card, Group, Loader, Stack, Table, Text, Title } from "@mantine/core";
 import type { UseQueryResult } from "@tanstack/react-query";
-import type { AvailabilityResponse } from "../types/api";
+import type { AvailabilityResponse, TableStatus } from "../types/api";
 
 type AvailabilityResultProps = {
   hasSubmitted: boolean;
   availabilityQuery: UseQueryResult<AvailabilityResponse, Error>;
 };
+
+function getStatusBadgeColor(status: TableStatus): string {
+  switch (status) {
+    case "FREE":
+      return "green";
+    case "OCCUPIED":
+      return "red";
+    case "TOO_SMALL":
+      return "gray";
+    default:
+      return "gray";
+  }
+}
 
 export function AvailabilityResult({
   hasSubmitted,
@@ -48,35 +52,58 @@ export function AvailabilityResult({
 
   return (
     <Card withBorder radius="md" p="md">
-      <Stack gap="xs">
+      <Stack gap="md">
         <Title order={5}>Availability Result</Title>
 
-        <Text>
-          Recommended table:{" "}
-          <Text span fw={700}>
+        <Group gap="xs">
+          <Text fw={500}>Recommended table:</Text>
+          <Badge color="blue" variant="light">
             {recommendedTableId ?? "None"}
-          </Text>
-        </Text>
+          </Badge>
+        </Group>
 
         <Group gap="xs">
-          <Text>Top 3:</Text>
-          {topRecommendations.length ? (
-            topRecommendations.map((id) => (
-              <Badge key={id} variant="light">
-                {id}
+          <Text fw={500}>Top 3:</Text>
+          {topRecommendations.length > 0 ? (
+            topRecommendations.map((tableId) => (
+              <Badge key={tableId} variant="light" color="indigo">
+                {tableId}
               </Badge>
             ))
           ) : (
-            <Text c="dimmed">None</Text>
+            <Text c="dimmed">No recommendations</Text>
           )}
         </Group>
 
-        <Text>
-          Tables returned:{" "}
-          <Text span fw={700}>
-            {tables.length}
-          </Text>
-        </Text>
+        <Table striped highlightOnHover withTableBorder>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>ID</Table.Th>
+              <Table.Th>Capacity</Table.Th>
+              <Table.Th>Zone</Table.Th>
+              <Table.Th>Status</Table.Th>
+              <Table.Th>Score</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {tables.map((table) => (
+              <Table.Tr key={table.id}>
+                <Table.Td>{table.id}</Table.Td>
+                <Table.Td>{table.capacity}</Table.Td>
+                <Table.Td>{table.zoneId}</Table.Td>
+                <Table.Td>
+                  <Badge
+                    color={getStatusBadgeColor(table.status)}
+                    variant="light"
+                  >
+                    {table.status}
+                  </Badge>
+                </Table.Td>
+                <Table.Td>{table.score}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
       </Stack>
     </Card>
   );

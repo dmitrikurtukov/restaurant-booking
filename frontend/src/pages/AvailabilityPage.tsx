@@ -19,7 +19,7 @@ export function AvailabilityPage() {
   if (isError) {
     return (
       <Alert color="red" title="Failed to load zones">
-        Could not load layout zones. Zone filter is temporarily unavailable.
+        Could not load layout zones. Please try again.
       </Alert>
     );
   }
