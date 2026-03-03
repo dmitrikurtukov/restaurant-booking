@@ -10,6 +10,10 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Search } from "lucide-react";
+import {
+  type TablePreference,
+  useAvailabilityFilters,
+} from "../hooks/useAvailabilityFilters";
 
 const zoneOptions = [
   { value: "1", label: "Main Hall" },
@@ -17,7 +21,7 @@ const zoneOptions = [
   { value: "3", label: "Private Room" },
 ];
 
-const preferenceOptions = [
+const preferenceOptions: Array<{ value: TablePreference; label: string }> = [
   { value: "QUIET", label: "Quiet" },
   { value: "WINDOW", label: "Window" },
   { value: "NEAR_KIDS", label: "Near kids area" },
@@ -25,6 +29,16 @@ const preferenceOptions = [
 ];
 
 export function AvailabilityFilters() {
+  const {
+    filters,
+    setStart,
+    setPartySize,
+    setDurationMinutes,
+    setZoneId,
+    setPreferences,
+    handleFindTables,
+  } = useAvailabilityFilters();
+
   return (
     <Card withBorder radius="md" p="md">
       <Stack gap="md">
@@ -35,12 +49,20 @@ export function AvailabilityFilters() {
             <DateTimePicker
               label="Date and time"
               placeholder="Pick date and time"
+              value={filters.start}
+              onChange={setStart}
               clearable={false}
             />
           </Grid.Col>
 
           <Grid.Col span={{ base: 6, md: 3 }}>
-            <NumberInput label="Party size" min={1} max={20} defaultValue={2} />
+            <NumberInput
+              label="Party size"
+              min={1}
+              max={20}
+              value={filters.partySize}
+              onChange={(value) => setPartySize(Number(value) || 1)}
+            />
           </Grid.Col>
 
           <Grid.Col span={{ base: 6, md: 3 }}>
@@ -48,7 +70,8 @@ export function AvailabilityFilters() {
               label="Duration (min)"
               min={1}
               max={300}
-              defaultValue={120}
+              value={filters.durationMinutes}
+              onChange={(value) => setDurationMinutes(Number(value) || 120)}
             />
           </Grid.Col>
 
@@ -57,6 +80,8 @@ export function AvailabilityFilters() {
               label="Zone (optional)"
               placeholder="Any zone"
               data={zoneOptions}
+              value={filters.zoneId}
+              onChange={setZoneId}
               clearable
               searchable
             />
@@ -67,12 +92,18 @@ export function AvailabilityFilters() {
               label="Preferences (optional)"
               placeholder="Select preferences"
               data={preferenceOptions}
+              value={filters.preferences}
+              onChange={(values) => setPreferences(values as TablePreference[])}
               clearable
             />
           </Grid.Col>
         </Grid>
 
-        <Button leftSection={<Search size={16} />} w="fit-content">
+        <Button
+          leftSection={<Search size={16} />}
+          w="fit-content"
+          onClick={handleFindTables}
+        >
           Find tables
         </Button>
       </Stack>
