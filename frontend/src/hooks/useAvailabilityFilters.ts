@@ -1,8 +1,7 @@
 import { useState } from "react";
+import type { TablePreference } from "../types/api";
 
-export type TablePreference = "QUIET" | "WINDOW" | "NEAR_KIDS" | "ACCESSIBLE";
-
-export interface AvailabilityFiltersState {
+export interface AvailabilityFiltersValues {
   start: string | null;
   partySize: number;
   durationMinutes: number;
@@ -17,17 +16,13 @@ export function useAvailabilityFilters() {
   const [zoneId, setZoneId] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<TablePreference[]>([]);
 
-  const filters: AvailabilityFiltersState = {
+  const filters: AvailabilityFiltersValues = {
     start,
     partySize,
     durationMinutes,
     zoneId,
     preferences,
   };
-
-  function handleFindTables() {
-    console.log(filters);
-  }
 
   return {
     filters,
@@ -36,6 +31,5 @@ export function useAvailabilityFilters() {
     setDurationMinutes,
     setZoneId,
     setPreferences,
-    handleFindTables,
   };
 }

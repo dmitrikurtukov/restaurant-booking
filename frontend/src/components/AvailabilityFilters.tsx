@@ -11,9 +11,10 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { Search } from "lucide-react";
 import {
-  type TablePreference,
+  type AvailabilityFiltersValues,
   useAvailabilityFilters,
 } from "../hooks/useAvailabilityFilters";
+import type { TablePreference } from "../types/api.ts";
 
 const zoneOptions = [
   { value: "1", label: "Main Hall" },
@@ -28,7 +29,13 @@ const preferenceOptions: Array<{ value: TablePreference; label: string }> = [
   { value: "ACCESSIBLE", label: "Accessible" },
 ];
 
-export function AvailabilityFilters() {
+type AvailabilityFiltersProps = {
+  onSubmit: (filters: AvailabilityFiltersValues) => void;
+};
+
+export function AvailabilityFilters({
+  onSubmit,
+}: Readonly<AvailabilityFiltersProps>) {
   const {
     filters,
     setStart,
@@ -36,8 +43,11 @@ export function AvailabilityFilters() {
     setDurationMinutes,
     setZoneId,
     setPreferences,
-    handleFindTables,
   } = useAvailabilityFilters();
+
+  const handleFindTables = () => {
+    onSubmit(filters);
+  };
 
   return (
     <Card withBorder radius="md" p="md">
