@@ -1,6 +1,7 @@
 import { Alert, Badge, Card, Group, Loader, Stack, Table, Text, Title } from "@mantine/core";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AvailabilityResponse, TableStatus } from "../types/api";
+import { TableMap } from "./TableMap.tsx";
 
 type AvailabilityResultProps = {
   hasSubmitted: boolean;
@@ -104,6 +105,11 @@ export function AvailabilityResult({
             ))}
           </Table.Tbody>
         </Table>
+        <TableMap
+          tables={tables}
+          recommendedTableId={recommendedTableId}
+          topRecommendations={topRecommendations}
+        />
       </Stack>
     </Card>
   );
