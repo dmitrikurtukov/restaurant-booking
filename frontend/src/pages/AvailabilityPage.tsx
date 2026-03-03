@@ -1,15 +1,19 @@
 import { Stack } from "@mantine/core";
 import { AvailabilityFilters } from "../components/AvailabilityFilters.tsx";
-import type { AvailabilityFiltersValues } from "../types/availability.ts";
+import { useAvailabilitySearch } from "../hooks/useAvailabilitySearch.ts";
+import { AvailabilityResult } from "../components/AvailabilityResult.tsx";
 
 export function AvailabilityPage() {
-  const handleSubmit = (filters: AvailabilityFiltersValues) => {
-    console.log("Submitted filters:", filters);
-  };
+  const { submitFilters, hasSubmitted, availabilityQuery } =
+    useAvailabilitySearch();
 
   return (
     <Stack gap="md">
-      <AvailabilityFilters onSubmit={handleSubmit} />
+      <AvailabilityFilters onSubmit={submitFilters} />
+      <AvailabilityResult
+        hasSubmitted={hasSubmitted}
+        availabilityQuery={availabilityQuery}
+      />
     </Stack>
   );
 }
