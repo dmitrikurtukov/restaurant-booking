@@ -1,4 +1,13 @@
-import { Alert, Badge, Card, Group, Loader, Stack, Text, Title } from "@mantine/core";
+import {
+  Alert,
+  Badge,
+  Card,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AvailabilityResponse } from "../types/api";
 

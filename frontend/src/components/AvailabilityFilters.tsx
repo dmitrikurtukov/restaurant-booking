@@ -1,18 +1,9 @@
-import {
-  Button,
-  Card,
-  Grid,
-  MultiSelect,
-  NumberInput,
-  Select,
-  Stack,
-  Title,
-} from "@mantine/core";
+import { Alert, Button, Card, Grid, MultiSelect, NumberInput, Select, Stack, Title } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { Search } from "lucide-react";
+import { CircleAlert, Search } from "lucide-react";
 import { useAvailabilityFilters } from "../hooks/useAvailabilityFilters";
+import type { AvailabilityFiltersValues } from "../types/availability";
 import type { TablePreference } from "../types/api.ts";
-import type { AvailabilityFiltersValues } from "../types/availability.ts";
 
 const zoneOptions = [
   { value: "1", label: "Main Hall" },
@@ -41,9 +32,12 @@ export function AvailabilityFilters({
     setDurationMinutes,
     setZoneId,
     setPreferences,
+    errorMessage,
+    validate,
   } = useAvailabilityFilters();
 
   const handleFindTables = () => {
+    if (!validate()) return;
     onSubmit(filters);
   };
 
@@ -106,6 +100,18 @@ export function AvailabilityFilters({
             />
           </Grid.Col>
         </Grid>
+
+        {errorMessage && (
+          <Alert
+            color="red"
+            icon={<CircleAlert size={16} />}
+            styles={{
+              icon: { marginRight: "4px" },
+            }}
+          >
+            {errorMessage}
+          </Alert>
+        )}
 
         <Button
           leftSection={<Search size={16} />}

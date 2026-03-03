@@ -8,6 +8,7 @@ export function useAvailabilityFilters() {
   const [durationMinutes, setDurationMinutes] = useState<number>(120);
   const [zoneId, setZoneId] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<TablePreference[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const filters: AvailabilityFiltersValues = {
     start,
@@ -17,6 +18,15 @@ export function useAvailabilityFilters() {
     preferences,
   };
 
+  function validate(): boolean {
+    if (!filters.start) {
+      setErrorMessage("Please select date and time.");
+      return false;
+    }
+    setErrorMessage(null);
+    return true;
+  }
+
   return {
     filters,
     setStart,
@@ -24,5 +34,7 @@ export function useAvailabilityFilters() {
     setDurationMinutes,
     setZoneId,
     setPreferences,
+    errorMessage,
+    validate,
   };
 }
