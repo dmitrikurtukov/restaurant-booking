@@ -15,7 +15,7 @@ Recommendation logic considers:
 
 - table capacity fit (avoid wasting large tables for small groups),
 - table features (`QUIET`, `WINDOW`, `NEAR_KIDS`, `ACCESSIBLE`),
-- occupancy mode: `random | real | mixed`.
+- occupancy mode: `random | real | mixed` (for testing purposes).
 
 ---
 
@@ -32,7 +32,13 @@ Recommendation logic considers:
 
 ### Frontend
 
-- `TBD`
+- **React 19 + TypeScript**
+- **Vite**
+- **Mantine UI**
+- **Tanstack Query**
+- **Axios**
+- **Lucide React** (icons)
+- **React Toastify** (reservation feedback)
 
 ### Infrastructure
 
@@ -154,6 +160,7 @@ Validation rules:
 ### Time Spent
 
 - **Backend:** ~28h
+- **Frontend:** ~18h
 
 ### Challenges and Solutions
 
@@ -176,3 +183,9 @@ Validation rules:
   I implemented deterministic randomization by seeding the random generator from the requested interval (`start`,
   `end`), so repeated requests for the same interval return the same occupied set.  
   I used ChatGPT for assistance to finalize this approach and then adapted it to my service logic.
+
+- **Interactive SVG floor plan (frontend):**  
+  The most difficult frontend part was building a readable SVG table map with zones, labels, recommendation
+  highlighting, and table selection that still looks clean on different screen sizes.  
+  I used ChatGPT assistance to iterate on the layout/model split and rendering approach, then adapted and refactored the
+  code to match my project architecture.
