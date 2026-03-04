@@ -1,5 +1,6 @@
 import { AppShell, Container, Title } from "@mantine/core";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
+import { ToastContainer } from "react-toastify";
 
 export default function App() {
   return (
@@ -10,6 +11,11 @@ export default function App() {
       <AppShell.Main>
         <Container size="lg" py="md">
           <AvailabilityPage />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            theme="colored"
+          />
         </Container>
       </AppShell.Main>
     </AppShell>

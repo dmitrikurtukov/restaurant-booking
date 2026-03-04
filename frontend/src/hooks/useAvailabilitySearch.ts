@@ -12,7 +12,7 @@ function mapFiltersToAvailabilityQuery(
   if (!filters.start) return null;
 
   const parsedStart = dayjs(filters.start);
-  if (!parsedStart) return null;
+  if (!parsedStart.isValid()) return null;
 
   return {
     start: parsedStart.format("YYYY-MM-DDTHH:mm:ss"),
@@ -55,5 +55,6 @@ export function useAvailabilitySearch() {
     submitFilters,
     hasSubmitted: submittedFilters !== null,
     availabilityQuery,
+    activeQuery: availabilityQueryInput,
   };
 }

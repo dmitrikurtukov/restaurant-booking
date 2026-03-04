@@ -5,9 +5,10 @@ import { useLayoutZoneOptions } from "../hooks/useLayoutZoneOptions.ts";
 import { TableMap } from "../components/TableMap.tsx";
 import { TableDetails } from "../components/TableDetails.tsx";
 import { useAvailabilityMapView } from "../hooks/useAvailabilityMapView.ts";
+import { useTableReservation } from "../hooks/useTableReservation.ts";
 
 export function AvailabilityPage() {
-  const { submitFilters, hasSubmitted, availabilityQuery } =
+  const { submitFilters, hasSubmitted, availabilityQuery, activeQuery } =
     useAvailabilitySearch();
 
   const { zoneOptions, zoneNameById, isError, isLoading } =
@@ -24,6 +25,13 @@ export function AvailabilityPage() {
     data: availabilityQuery.data,
     zoneNameById,
   });
+
+  const { canReserve, isReserving, reserveTable, reservationError } =
+    useTableReservation({
+      selectedTable,
+      activeQuery,
+      refetchAvailability: availabilityQuery.refetch,
+    });
 
   if (isLoading)
     return (
@@ -91,6 +99,10 @@ export function AvailabilityPage() {
                   ? topRecommendations.includes(selectedTable.id)
                   : false
               }
+              canReserve={canReserve}
+              isReserving={isReserving}
+              onReserve={reserveTable}
+              reservationError={reservationError}
             />
           </Grid.Col>
         </Grid>
