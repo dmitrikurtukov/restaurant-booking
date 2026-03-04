@@ -1,8 +1,10 @@
-import { Alert, Center, Loader, Stack } from "@mantine/core";
+import { Alert, Center, Grid, Loader, Stack } from "@mantine/core";
 import { AvailabilityFilters } from "../components/AvailabilityFilters.tsx";
 import { useAvailabilitySearch } from "../hooks/useAvailabilitySearch.ts";
-import { AvailabilityResult } from "../components/AvailabilityResult.tsx";
 import { useLayoutZoneOptions } from "../hooks/useLayoutZoneOptions.ts";
+import { TableMap } from "../components/TableMap.tsx";
+import { TableDetails } from "../components/TableDetails.tsx";
+import { useAvailabilityMapView } from "../hooks/useAvailabilityMapView.ts";
 
 export function AvailabilityPage() {
   const { submitFilters, hasSubmitted, availabilityQuery } =
@@ -10,6 +12,18 @@ export function AvailabilityPage() {
 
   const { zoneOptions, zoneNameById, isError, isLoading } =
     useLayoutZoneOptions();
+
+  const {
+    tableMapModel,
+    selectedTableId,
+    setSelectedTableId,
+    selectedTable,
+    recommendedTableId,
+    topRecommendations,
+  } = useAvailabilityMapView({
+    data: availabilityQuery.data,
+    zoneNameById,
+  });
 
   if (isLoading)
     return (
@@ -26,14 +40,61 @@ export function AvailabilityPage() {
     );
   }
 
+  if (hasSubmitted && availabilityQuery.isLoading) {
+    return (
+      <Stack gap="md">
+        <AvailabilityFilters
+          onSubmit={submitFilters}
+          zoneOptions={zoneOptions}
+        />
+        <Center h={220}>
+          <Loader />
+        </Center>
+      </Stack>
+    );
+  }
+
+  if (hasSubmitted && availabilityQuery.isError) {
+    return (
+      <Stack gap="md">
+        <AvailabilityFilters
+          onSubmit={submitFilters}
+          zoneOptions={zoneOptions}
+        />
+        <Alert color="red" title="Failed to load availability">
+          {availabilityQuery.error.message}
+        </Alert>
+      </Stack>
+    );
+  }
+
   return (
     <Stack gap="md">
       <AvailabilityFilters onSubmit={submitFilters} zoneOptions={zoneOptions} />
-      <AvailabilityResult
-        hasSubmitted={hasSubmitted}
-        availabilityQuery={availabilityQuery}
-        zoneNameById={zoneNameById}
-      />
+
+      {hasSubmitted && availabilityQuery.data && (
+        <Grid gutter="md">
+          <Grid.Col span={{ base: 12, lg: 8 }}>
+            <TableMap
+              model={tableMapModel}
+              selectedTableId={selectedTableId}
+              onSelectTable={setSelectedTableId}
+            />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 4 }}>
+            <TableDetails
+              table={selectedTable}
+              zoneNameById={zoneNameById}
+              isRecommended={selectedTable?.id === recommendedTableId}
+              isTopRecommendation={
+                selectedTable
+                  ? topRecommendations.includes(selectedTable.id)
+                  : false
+              }
+            />
+          </Grid.Col>
+        </Grid>
+      )}
     </Stack>
   );
 }

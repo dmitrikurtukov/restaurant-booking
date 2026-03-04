@@ -13,6 +13,7 @@ export type ZoneArea = {
 
 export type TableMarker = {
   id: number;
+  label: string;
   cx: number;
   cy: number;
   fill: string;
@@ -153,6 +154,7 @@ export function createTableMapModel({
 
     return {
       id: table.id,
+      label: String(table.capacity),
       cx: toCanvasX(table.xPosition),
       cy: toCanvasY(table.yPosition),
       fill: tableFill(table.status),

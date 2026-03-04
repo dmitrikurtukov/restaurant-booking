@@ -4,9 +4,15 @@ import { tableMapConstants } from "../lib/tableMapModel";
 
 type TableMapProps = {
   model: TableMapModel;
+  selectedTableId: number | null;
+  onSelectTable: (tableId: number) => void;
 };
 
-export function TableMap({ model }: Readonly<TableMapProps>) {
+export function TableMap({
+  model,
+  selectedTableId,
+  onSelectTable,
+}: Readonly<TableMapProps>) {
   return (
     <Card withBorder radius="md" p="md">
       <Stack gap="md">
@@ -14,16 +20,13 @@ export function TableMap({ model }: Readonly<TableMapProps>) {
 
         <Group gap="xs">
           <Badge color="green" variant="light">
-            Free
+            Available
           </Badge>
           <Badge color="red" variant="light">
             Occupied
           </Badge>
           <Badge color="gray" variant="light">
             Too small
-          </Badge>
-          <Badge color="blue" variant="light">
-            Recommended
           </Badge>
         </Group>
 
@@ -63,33 +66,56 @@ export function TableMap({ model }: Readonly<TableMapProps>) {
             </g>
           ))}
 
-          {model.tableMarkers.map((marker) => (
-            <g key={marker.id}>
-              <circle
-                cx={marker.cx}
-                cy={marker.cy}
-                r={tableMapConstants.tableRadius}
-                fill={marker.fill}
-                stroke={marker.stroke}
-                strokeWidth={marker.strokeWidth}
-                opacity={marker.opacity}
-              />
-              <text
-                x={marker.cx}
-                y={marker.cy + 4}
-                textAnchor="middle"
-                fontSize="12"
-                fontWeight="700"
-                fill="#fff"
+          {model.tableMarkers.map((marker) => {
+            const isSelected = marker.id === selectedTableId;
+
+            return (
+              <g
+                key={marker.id}
+                onClick={() => onSelectTable(marker.id)}
+                style={{ cursor: "pointer" }}
               >
-                {marker.id}
-              </text>
-            </g>
-          ))}
+                {isSelected && (
+                  <circle
+                    cx={marker.cx}
+                    cy={marker.cy}
+                    r={tableMapConstants.tableRadius + 5}
+                    fill="none"
+                    stroke="#111827"
+                    strokeWidth={2}
+                    opacity={0.95}
+                  />
+                )}
+                <circle
+                  cx={marker.cx}
+                  cy={marker.cy}
+                  r={tableMapConstants.tableRadius}
+                  fill={marker.fill}
+                  stroke={marker.stroke}
+                  strokeWidth={marker.strokeWidth}
+                  opacity={marker.opacity}
+                />
+                <text
+                  x={marker.cx}
+                  y={marker.cy + 4}
+                  textAnchor="middle"
+                  fontSize="12"
+                  fontWeight="700"
+                  fill="#fff"
+                >
+                  {marker.label}
+                </text>
+              </g>
+            );
+          })}
         </svg>
 
         <Text size="sm" c="dimmed">
-          Blue border = recommended table. Thicker border = top recommendations.
+          Click a table to view details. Number inside table = seats.
+        </Text>
+        <Text size="sm" c="dimmed">
+          Border guide: blue = recommended, thicker = top recommendation, outer
+          dark ring = selected table.
         </Text>
       </Stack>
     </Card>
