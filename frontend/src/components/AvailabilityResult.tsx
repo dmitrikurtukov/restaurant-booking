@@ -1,11 +1,14 @@
-import { Alert, Badge, Card, Group, Loader, Stack, Table, Text, Title } from "@mantine/core";
-import type { UseQueryResult } from "@tanstack/react-query";
-import type { AvailabilityResponse, TableStatus } from "../types/api";
-import { TableMap } from "./TableMap.tsx";
+import {Alert, Badge, Card, Group, Loader, Stack, Table, Text, Title,} from "@mantine/core";
+import type {UseQueryResult} from "@tanstack/react-query";
+import type {AvailabilityResponse, TableStatus} from "../types/api";
+import {TableMap} from "./TableMap.tsx";
+import {useMemo} from "react";
+import {createTableMapModel} from "../lib/tableMapModel.ts";
 
 type AvailabilityResultProps = {
   hasSubmitted: boolean;
   availabilityQuery: UseQueryResult<AvailabilityResponse, Error>;
+  zoneNameById: Record<string, string>;
 };
 
 function getStatusBadgeColor(status: TableStatus): string {
@@ -24,7 +27,24 @@ function getStatusBadgeColor(status: TableStatus): string {
 export function AvailabilityResult({
   hasSubmitted,
   availabilityQuery,
+  zoneNameById,
 }: Readonly<AvailabilityResultProps>) {
+  const availabilityData = availabilityQuery.data;
+  const tables = availabilityData?.tables ?? [];
+  const recommendedTableId = availabilityData?.recommendedTableId ?? null;
+  const topRecommendations = availabilityData?.topRecommendations ?? [];
+
+  const tableMapModel = useMemo(
+    () =>
+      createTableMapModel({
+        tables,
+        recommendedTableId,
+        topRecommendations,
+        zoneNameById,
+      }),
+    [tables, recommendedTableId, topRecommendations, zoneNameById],
+  );
+
   if (!hasSubmitted) return null;
 
   if (availabilityQuery.isLoading) {
@@ -47,9 +67,6 @@ export function AvailabilityResult({
   }
 
   if (!availabilityQuery.data) return null;
-
-  const { recommendedTableId, topRecommendations, tables } =
-    availabilityQuery.data;
 
   return (
     <Card withBorder radius="md" p="md">
@@ -91,7 +108,9 @@ export function AvailabilityResult({
               <Table.Tr key={table.id}>
                 <Table.Td>{table.id}</Table.Td>
                 <Table.Td>{table.capacity}</Table.Td>
-                <Table.Td>{table.zoneId}</Table.Td>
+                <Table.Td>
+                  {zoneNameById[String(table.zoneId)] ?? table.zoneId}
+                </Table.Td>
                 <Table.Td>
                   <Badge
                     color={getStatusBadgeColor(table.status)}
@@ -100,16 +119,15 @@ export function AvailabilityResult({
                     {table.status}
                   </Badge>
                 </Table.Td>
-                <Table.Td>{table.score}</Table.Td>
+                <Table.Td>
+                  {table.status === "FREE" ? table.score : "—"}
+                </Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
-        <TableMap
-          tables={tables}
-          recommendedTableId={recommendedTableId}
-          topRecommendations={topRecommendations}
-        />
+
+        <TableMap model={tableMapModel} />
       </Stack>
     </Card>
   );

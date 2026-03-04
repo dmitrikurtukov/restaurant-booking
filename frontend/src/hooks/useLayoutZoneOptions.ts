@@ -17,8 +17,17 @@ export function useLayoutZoneOptions() {
     }));
   }, [layoutQuery.data]);
 
+  const zoneNameById = useMemo(() => {
+    if (!layoutQuery.data) return {} as Record<string, string>;
+
+    return Object.fromEntries(
+      layoutQuery.data.zones.map((zone) => [String(zone.id), zone.name]),
+    );
+  }, [layoutQuery.data]);
+
   return {
     zoneOptions,
+    zoneNameById,
     isError: layoutQuery.isError,
     isLoading: layoutQuery.isLoading,
   };

@@ -8,7 +8,8 @@ export function AvailabilityPage() {
   const { submitFilters, hasSubmitted, availabilityQuery } =
     useAvailabilitySearch();
 
-  const { zoneOptions, isError, isLoading } = useLayoutZoneOptions();
+  const { zoneOptions, zoneNameById, isError, isLoading } =
+    useLayoutZoneOptions();
 
   if (isLoading)
     return (
@@ -16,6 +17,7 @@ export function AvailabilityPage() {
         <Loader />
       </Center>
     );
+
   if (isError) {
     return (
       <Alert color="red" title="Failed to load zones">
@@ -30,6 +32,7 @@ export function AvailabilityPage() {
       <AvailabilityResult
         hasSubmitted={hasSubmitted}
         availabilityQuery={availabilityQuery}
+        zoneNameById={zoneNameById}
       />
     </Stack>
   );

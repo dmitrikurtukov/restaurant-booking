@@ -1,31 +1,16 @@
 import { Badge, Card, Group, Stack, Text, Title } from "@mantine/core";
-import type { AvailabilityTableDto } from "../types/api";
+import type { TableMapModel } from "../lib/tableMapModel";
+import { tableMapConstants } from "../lib/tableMapModel";
 
 type TableMapProps = {
-  tables: AvailabilityTableDto[];
-  recommendedTableId: number | null;
-  topRecommendations: number[];
+  model: TableMapModel;
 };
 
-const SVG_WIDTH = 640;
-const SVG_HEIGHT = 360;
-const TABLE_RADIUS = 16;
-
-function getTableColor(status: AvailabilityTableDto["status"]): string {
-  if (status === "FREE") return "#40c057";
-  if (status === "OCCUPIED") return "#fa5252";
-  return "#868e96";
-}
-
-export function TableMap({
-  tables,
-  recommendedTableId,
-  topRecommendations,
-}: Readonly<TableMapProps>) {
+export function TableMap({ model }: Readonly<TableMapProps>) {
   return (
     <Card withBorder radius="md" p="md">
       <Stack gap="md">
-        <Title order={5}>Floor Plan</Title>
+        <Title order={5}>Table Plan by Zones</Title>
 
         <Group gap="xs">
           <Badge color="green" variant="light">
@@ -44,53 +29,67 @@ export function TableMap({
 
         <svg
           width="100%"
-          viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+          viewBox={`0 0 ${model.svgWidth} ${model.svgHeight}`}
           role="img"
-          aria-label="Restaurant table map"
+          aria-label="Restaurant table map by zones"
           style={{
             border: "1px solid #dee2e6",
             borderRadius: 8,
             background: "#f8f9fa",
           }}
         >
-          {tables.map((table) => {
-            const cx = table.xPosition * 2 + 40;
-            const cy = table.yPosition * 1.6 + 40;
+          {model.zoneAreas.map((area) => (
+            <g key={`zone-${area.zoneId}`}>
+              <rect
+                x={area.x}
+                y={area.y}
+                width={area.width}
+                height={area.height}
+                rx={12}
+                fill={area.fill}
+                stroke={area.stroke}
+                strokeWidth={1.5}
+                opacity={0.45}
+              />
+              <text
+                x={area.x + 10}
+                y={area.y + 18}
+                fontSize="12"
+                fontWeight="700"
+                fill={area.stroke}
+              >
+                {area.name}
+              </text>
+            </g>
+          ))}
 
-            const isRecommended = table.id === recommendedTableId;
-            const isTop = topRecommendations.includes(table.id);
-
-            const baseWidth = isTop ? 3 : 2;
-            const strokeWidth = isRecommended ? 4 : baseWidth;
-
-            return (
-              <g key={table.id}>
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={TABLE_RADIUS}
-                  fill={getTableColor(table.status)}
-                  stroke={isRecommended ? "#228be6" : "#495057"}
-                  strokeWidth={strokeWidth}
-                  opacity={table.status === "OCCUPIED" ? 0.85 : 1}
-                />
-                <text
-                  x={cx}
-                  y={cy + 4}
-                  textAnchor="middle"
-                  fontSize="12"
-                  fontWeight="700"
-                  fill="#fff"
-                >
-                  {table.id}
-                </text>
-              </g>
-            );
-          })}
+          {model.tableMarkers.map((marker) => (
+            <g key={marker.id}>
+              <circle
+                cx={marker.cx}
+                cy={marker.cy}
+                r={tableMapConstants.tableRadius}
+                fill={marker.fill}
+                stroke={marker.stroke}
+                strokeWidth={marker.strokeWidth}
+                opacity={marker.opacity}
+              />
+              <text
+                x={marker.cx}
+                y={marker.cy + 4}
+                textAnchor="middle"
+                fontSize="12"
+                fontWeight="700"
+                fill="#fff"
+              >
+                {marker.id}
+              </text>
+            </g>
+          ))}
         </svg>
 
         <Text size="sm" c="dimmed">
-          Blue border = recommended table, thicker border = top recommendations.
+          Blue border = recommended table. Thicker border = top recommendations.
         </Text>
       </Stack>
     </Card>
