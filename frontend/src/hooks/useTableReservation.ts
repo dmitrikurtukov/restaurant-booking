@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { type AvailabilityQuery, createReservation, getDishSuggestion } from "../api/restaurantApi";
+import {
+  type AvailabilityQuery,
+  createReservation,
+  getDishSuggestion,
+} from "../api/restaurantApi";
 import type { AvailabilityTableDto, DishSuggestion } from "../types/api";
 
 type UseTableReservationParams = {

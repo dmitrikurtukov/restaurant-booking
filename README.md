@@ -42,7 +42,8 @@ Recommendation logic considers:
 
 ### Infrastructure
 
-- **Docker Compose** (PostgreSQL)
+- **Docker Compose** (PostgreSQL + backend + frontend)
+- **Nginx** (serving frontend + reverse proxy to backend `/api`)
 
 ---
 
@@ -51,8 +52,9 @@ Recommendation logic considers:
 ```text
 .
 ├── backend/                # Spring Boot backend
-├── frontend/               # React frontend
-└── docker-compose.yml      # PostgreSQL container
+├── frontend/               # React frontend + Nginx config
+├── docker-compose.yml      # Full stack containers
+└── .env.example            # Environment template
 ```
 
 ---
@@ -61,13 +63,36 @@ Recommendation logic considers:
 
 Make sure you have **Java 25**, **Docker Desktop**, and **Node.js** installed.
 
-### 1. Start database
+### Option A: Production-like Full Stack (Docker)
+
+1. Prepare environment:
 
 ```sh
-docker compose up -d
+cp .env.example .env
 ```
 
-### 2. Run backend
+Update values in `.env` (at least `POSTGRES_PASSWORD`).
+
+2. Build and run all services:
+
+```sh
+docker compose up -d --build
+```
+
+3. Open application:
+
+- Frontend: `http://localhost`
+- API via Nginx proxy: `http://localhost/api/...`
+
+### Option B: Local Development
+
+1. Start database only:
+
+```sh
+docker compose up -d postgres
+```
+
+2. Run backend
 
 You can run the backend in two ways (with a PostgreSQL container running):
 
@@ -84,7 +109,7 @@ cd backend
 Backend URL:  
 `http://localhost:8080`
 
-### 3. Run frontend
+3. Run frontend
 
 ```sh
 cd frontend
@@ -104,6 +129,7 @@ Main endpoints:
 - `GET /api/layout`
 - `GET /api/availability`
 - `POST /api/reservations`
+- `GET /api/dish-suggestion`
 
 Example:
 
@@ -132,6 +158,13 @@ Validation rules:
 - allowed duration: `1..300` minutes
 - API error handling: `400`, `404`, `409`
 
+Docker environment variables (`.env`):
+
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `APP_AVAILABILITY_MODE` (`random | real | mixed`)
+
 ---
 
 ## Assignment Progress
@@ -151,7 +184,7 @@ Validation rules:
 - [ ] Average visit time improvements (2–3h modeling)
 - [ ] Admin layout editor
 - [x] External food/recipe API integration
-- [ ] Production-ready Docker setup for full stack
+- [x] Production-ready Docker setup for full stack
 
 ---
 
