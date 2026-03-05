@@ -43,3 +43,11 @@ export interface CreateReservationRequest {
   durationMinutes?: number;
   preferences?: TablePreference[];
 }
+
+export interface DishSuggestion {
+  name: string;
+  category: string | null;
+  cuisine: string | null;
+  imageUrl: string | null;
+  sourceUrl: string | null;
+}

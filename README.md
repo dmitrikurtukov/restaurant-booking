@@ -150,7 +150,7 @@ Validation rules:
 - [ ] Dynamic table merge
 - [ ] Average visit time improvements (2–3h modeling)
 - [ ] Admin layout editor
-- [ ] External food/recipe API integration
+- [x] External food/recipe API integration
 - [ ] Production-ready Docker setup for full stack
 
 ---

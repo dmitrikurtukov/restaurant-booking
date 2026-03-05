@@ -2,6 +2,7 @@ import { apiClient } from "./client";
 import type {
   AvailabilityResponse,
   CreateReservationRequest,
+  DishSuggestion,
   LayoutResponse,
   TablePreference,
 } from "../types/api";
@@ -49,5 +50,10 @@ export async function createReservation(
   payload: CreateReservationRequest,
 ): Promise<number> {
   const { data } = await apiClient.post<number>("/api/reservations", payload);
+  return data;
+}
+
+export async function getDishSuggestion(): Promise<DishSuggestion> {
+  const { data } = await apiClient.get<DishSuggestion>("/api/dish-suggestion");
   return data;
 }

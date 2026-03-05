@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import {
-  type AvailabilityQuery,
-  createReservation,
-} from "../api/restaurantApi";
-import type { AvailabilityTableDto } from "../types/api";
-import { toast } from "react-toastify";
+import { type AvailabilityQuery, createReservation, getDishSuggestion } from "../api/restaurantApi";
+import type { AvailabilityTableDto, DishSuggestion } from "../types/api";
 
 type UseTableReservationParams = {
   selectedTable: AvailabilityTableDto | null;
   activeQuery: AvailabilityQuery | null;
   refetchAvailability: () => Promise<unknown>;
+};
+
+export type ReservationSuccessData = {
+  reservationId: number;
+  tableId: number;
+  zoneId: number;
+  capacity: number;
+  start: string;
+  partySize: number;
+  durationMinutes: number;
+  dishSuggestion: DishSuggestion | null;
 };
 
 export function useTableReservation({
@@ -19,6 +26,8 @@ export function useTableReservation({
   refetchAvailability,
 }: UseTableReservationParams) {
   const [reservationError, setReservationError] = useState<string | null>(null);
+  const [reservationSuccess, setReservationSuccess] =
+    useState<ReservationSuccessData | null>(null);
 
   useEffect(() => {
     setReservationError(null);
@@ -30,17 +39,41 @@ export function useTableReservation({
         throw new Error("Please search availability and select a table.");
       }
 
-      return createReservation({
+      const reservationId = await createReservation({
         tableId: selectedTable.id,
         start: activeQuery.start,
         partySize: activeQuery.partySize,
         durationMinutes: activeQuery.durationMinutes,
         preferences: activeQuery.preferences,
       });
+
+      return {
+        reservationId,
+        table: selectedTable,
+        query: activeQuery,
+      };
     },
-    onSuccess: async () => {
+    onSuccess: async ({ reservationId, table, query }) => {
       setReservationError(null);
-      toast.success("Reservation created successfully!");
+
+      let dishSuggestion: DishSuggestion | null;
+      try {
+        dishSuggestion = await getDishSuggestion();
+      } catch {
+        dishSuggestion = null;
+      }
+
+      setReservationSuccess({
+        reservationId,
+        tableId: table.id,
+        zoneId: table.zoneId,
+        capacity: table.capacity,
+        start: query.start,
+        partySize: query.partySize,
+        durationMinutes: query.durationMinutes ?? 120,
+        dishSuggestion,
+      });
+
       await refetchAvailability();
     },
     onError: (error: Error) => {
@@ -53,5 +86,7 @@ export function useTableReservation({
     isReserving: reserveMutation.isPending,
     reserveTable: () => reserveMutation.mutate(),
     reservationError,
+    reservationSuccess,
+    closeReservationSuccess: () => setReservationSuccess(null),
   };
 }

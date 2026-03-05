@@ -19,8 +19,16 @@ export function useAvailabilityMapView({
 
   useEffect(() => {
     if (!data) return;
+    const selectedTableStillExists =
+      selectedTableId !== null &&
+      data.tables.some((table) => table.id === selectedTableId);
+
+    if (selectedTableStillExists) {
+      return;
+    }
+
     setSelectedTableId(recommendedTableId ?? data.tables[0]?.id ?? null);
-  }, [data, recommendedTableId]);
+  }, [data, recommendedTableId, selectedTableId]);
 
   const selectedTable = useMemo(
     () => tables.find((table) => table.id === selectedTableId) ?? null,

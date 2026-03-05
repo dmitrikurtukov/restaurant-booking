@@ -6,6 +6,7 @@ import { TableMap } from "../components/TableMap.tsx";
 import { TableDetails } from "../components/TableDetails.tsx";
 import { useAvailabilityMapView } from "../hooks/useAvailabilityMapView.ts";
 import { useTableReservation } from "../hooks/useTableReservation.ts";
+import { ReservationSuccessModal } from "../components/ReservationSuccessModal.tsx";
 
 export function AvailabilityPage() {
   const { submitFilters, hasSubmitted, availabilityQuery, activeQuery } =
@@ -26,12 +27,18 @@ export function AvailabilityPage() {
     zoneNameById,
   });
 
-  const { canReserve, isReserving, reserveTable, reservationError } =
-    useTableReservation({
-      selectedTable,
-      activeQuery,
-      refetchAvailability: availabilityQuery.refetch,
-    });
+  const {
+    canReserve,
+    isReserving,
+    reserveTable,
+    reservationError,
+    reservationSuccess,
+    closeReservationSuccess,
+  } = useTableReservation({
+    selectedTable,
+    activeQuery,
+    refetchAvailability: availabilityQuery.refetch,
+  });
 
   if (isLoading)
     return (
@@ -107,6 +114,13 @@ export function AvailabilityPage() {
           </Grid.Col>
         </Grid>
       )}
+
+      <ReservationSuccessModal
+        opened={Boolean(reservationSuccess)}
+        successData={reservationSuccess}
+        zoneNameById={zoneNameById}
+        onClose={closeReservationSuccess}
+      />
     </Stack>
   );
 }
